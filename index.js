@@ -4,6 +4,11 @@ import express from 'express'
 const app = express()
 import { users, schedules } from './data.js'
 const port = 3000
+
+//bcrypt
+import bcrypt from 'bcrypt'
+const saltRounds = 10;
+
 //body passer
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -68,15 +73,15 @@ app.get('/users/:id/schedules', (req, res) => {
 
 //Step 4
 
-app.post('/users', (req, res) => {
-    users.push(req.body)
-    res.send(req.body)
-})
+// app.post('/users', (req, res) => {
+//     users.push(req.body)
+//     res.send(req.body)
+// })
 
-app.post('/users', (req, res) => {
-    users.push(req.body.password)
-    res.send(req.body)
-})
+// app.post('/users', (req, res) => {
+//     users.push(req.body.password)
+//     res.send(req.body)
+// })
 
 app.post('/schedules', (req, res) => {
     users.push(req.body)
@@ -86,13 +91,15 @@ app.post('/schedules', (req, res) => {
 
 app.post('/users', (req, res) => {
     const plainTextPassword = req.body.password
-    console.log(plainTextPassword)
-    bcrypt.genSalt(saltRounds, (err, salt)=> {
-        const hash = bcrypt.hash(myPlaintextPassword, salt, (err, hash)=> {
-            console.log(hash)
+    console.log(`The user password: ${plainTextPassword}`)
+    console.log('before')
+    bcrypt.genSalt(saltRounds, (err, salt) => {
+        const hash = bcrypt.hash(plainTextPassword, salt, (err, hash) => {
+            console.log(`The hash: ${hash}`)
             res.send(hash)
         });
     });
+    console.log('after')
 })
 
 
