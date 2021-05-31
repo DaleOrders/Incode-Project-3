@@ -1,4 +1,4 @@
-const users = [
+module.exports.users = [
     {
         'firstname': "James",
         'lastname': "Bond",
@@ -19,7 +19,7 @@ const users = [
     }
 ]
 
-const schedules = [
+module.exports.schedules = [
     {
         'user_id': 0,
         'day': 1,
@@ -46,4 +46,3 @@ const schedules = [
     }
 ]
 
-export {users, schedules}

@@ -1,16 +1,12 @@
-//const express = require('express')
-//const data=require('./data.js')
-import express from 'express'
-import { users, schedules } from './data.js'
+const express = require('express')
+const data=require('./data.js')
 
 const app = express()
 const port = process.env.PORT||3000
 
-//postgres setup
-import db from '/database.js'
 
 //bcrypt setup
-import bcrypt from 'bcrypt'
+const bcrypt =require('bcrypt')
 const saltRounds = 10;
 
 //body passer
@@ -20,7 +16,6 @@ app.use(express.urlencoded({ extended: true }))
 //set view engine
 app.set('view engine', 'ejs')
 
-/
 
 
 app.get('/', (req, res) => {
@@ -29,23 +24,12 @@ app.get('/', (req, res) => {
 
 //Step 2
 app.get('/schedules', (req, res) => {
-    res.send(schedules)
+    res.send(data.schedules)
 })
 
 app.get('/users', (req, res) => {
-    res.send(users)
+    res.send(data.users)
 })
-
-// app.get('/schedules/:id', (req, res) => {
-//     const arr = []
-//     for (let i = 0; i < schedules.length; i++) {
-//         if(schedules[i].user_id === Number(req.params.id)){
-//         arr.push(schedules[i])
-//         }
-//     }
-//     res.send(arr)
-// })
-
 
 
 //Step 3
@@ -54,10 +38,10 @@ app.get('/users', (req, res) => {
 
 app.get('/users/:id', (req, res) => {
     const id = parseInt(req.params.id)
-    if (id >= users.length) {
+    if (id >= data.users.length) {
         res.send('invalid number')
     } else {
-        res.send(users[id])
+        res.send(data.users[id])
     }
 }
 )
@@ -67,12 +51,12 @@ app.get('/users/:id', (req, res) => {
 
 app.get('/users/:id/schedules', (req, res) => {
     const arr = []
-    if (Number(req.params.id) >= users.length) {
+    if (Number(req.params.id) >= data.users.length) {
         res.send('invalid user id')
     }
-    for (let i = 0; i < schedules.length; i++) {
-        if (schedules[i].user_id === Number(req.params.id)) {
-            arr.push(schedules[i])
+    for (let i = 0; i < data.schedules.length; i++) {
+        if (data.schedules[i].user_id === Number(req.params.id)) {
+            arr.push(data.schedules[i])
         }
     }
     res.send(arr)
@@ -80,21 +64,14 @@ app.get('/users/:id/schedules', (req, res) => {
 
 //Step 4
 
-// app.post('/users', (req, res) => {
-//     users.push(req.body)
-//     res.send(req.body)
-// })
-
-// app.post('/users', (req, res) => {
-//     users.push(req.body.password)
-//     res.send(req.body)
-// })
 
 app.post('/schedules', (req, res) => {
-    users.push(req.body)
+    data.users.push(req.body)
     res.send(req.body)
 })
 
+
+// curl -d "firstname=Donald&lastname=Duck&email=coincoin@gmail.com&password=daisy" -X POST localhost:3000/users
 
 app.post('/users', (req, res) => {
     const plainTextPassword = req.body.password
@@ -108,6 +85,43 @@ app.post('/users', (req, res) => {
     });
     console.log('after')
 })
+
+
+
+
+//testing
+
+
+/*
+app.get('/schedules/:id', (req, res) => {
+    const arr = []
+    for (let i = 0; i < schedules.length; i++) {
+        if(schedules[i].user_id === Number(req.params.id)){
+        arr.push(schedules[i])
+        }
+    }
+    res.send(arr)
+})
+
+*/
+
+/*
+app.post('/users', (req, res) => {
+    users.push(req.body)
+    res.send(req.body)
+})
+
+*/
+
+
+/*
+
+app.post('/users', (req, res) => {
+    users.push(req.body.password)
+    res.send(req.body)
+})
+
+*/
 
 
 app.listen(port, () => {
