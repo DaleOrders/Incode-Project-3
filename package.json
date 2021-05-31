@@ -5,12 +5,17 @@
   "description": "An express app",
   "main": "index.js",
   "scripts": {
+    "create-database":"createdb coffeemr",
+    "create-table": "psql -U postgres, -h localhost -d coffeemr -f sql/create_schedules.sql",
+    "seed-table": "psql -U postgres, -h localhost -d coffeemr -f sql/seed_schedules.sql",
+    "dev":"nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "pg-promise": "^10.10.2"
   }
 }

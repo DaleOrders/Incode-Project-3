@@ -1,11 +1,15 @@
 //const express = require('express')
 //const data=require('./data.js')
 import express from 'express'
-const app = express()
 import { users, schedules } from './data.js'
-const port = 3000
 
-//bcrypt
+const app = express()
+const port = process.env.PORT||3000
+
+//postgres setup
+import db from '/database.js'
+
+//bcrypt setup
 import bcrypt from 'bcrypt'
 const saltRounds = 10;
 
@@ -15,6 +19,9 @@ app.use(express.urlencoded({ extended: true }))
 
 //set view engine
 app.set('view engine', 'ejs')
+
+/
+
 
 app.get('/', (req, res) => {
     res.send("Welcome to our schedule website")
