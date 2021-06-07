@@ -1,12 +1,13 @@
 const express = require('express')
-const data=require('./data.js')
+const data = require('./data.js')
+
 
 const app = express()
-const port = process.env.PORT||3000
+const port = process.env.PORT || 3005
 
 
 //bcrypt setup
-const bcrypt =require('bcrypt')
+const bcrypt = require('bcrypt')
 const saltRounds = 10;
 
 //body passer
@@ -15,76 +16,113 @@ app.use(express.urlencoded({ extended: true }))
 
 //set view engine
 app.set('view engine', 'ejs')
-
+app.use(express.static('public'))
 
 
 app.get('/', (req, res) => {
-    res.send("Welcome to our schedule website")
+    res.render('pages/index',
+        {
+            Heading: 'Welcome to Mr Coffee\'s Website'
+
+        })
 })
+
 
 //Step 2
+//route to display schedules
 app.get('/schedules', (req, res) => {
-    res.send(data.schedules)
+    res.render('pages/schedules.ejs', {
+        data: data.schedules
+    })
 })
 
+//route to display users
 app.get('/users', (req, res) => {
-    res.send(data.users)
+    res.render('pages/users.ejs', {
+        data: data.users
+    })
 })
 
 
 //Step 3
 
-// '/users/2' will return the information of user n°2
 
-app.get('/users/:id', (req, res) => {
-    const id = parseInt(req.params.id)
-    if (id >= data.users.length) {
-        res.send('invalid number')
-    } else {
-        res.send(data.users[id])
-    }
-}
-)
+//route to display user by id
+// app.get('/users/:id', (req, res) => {
+//     const id = parseInt(req.params.id)
+//     if (id >= data.users.length) {
+//         res.render('pages/id.ejs', {
+//             data: 'Invalid ID entered'
+//         })
+//     } else {
+//         res.render('pages/id.ejs', {
+//             data: data.users[id]
+//         })
+//     }
+// }
+// )
 
 
-// '/users/2/schedules' will return a list of all schedules for user n°2
 
+//route to display user by id
 app.get('/users/:id/schedules', (req, res) => {
     const arr = []
     if (Number(req.params.id) >= data.users.length) {
-        res.send('invalid user id')
+        res.render('pages/id_schedules.ejs', {
+            data: 'Invalid ID entered'
+        })
     }
     for (let i = 0; i < data.schedules.length; i++) {
         if (data.schedules[i].user_id === Number(req.params.id)) {
-            arr.push(data.schedules[i])
+            res.render('pages/id_schedules.ejs', {
+                data: data.schedules[i]
+            })
         }
-    }
-    res.send(arr)
-})
+    }})
 
 //Step 4
 
 
-app.post('/schedules', (req, res) => {
-    data.users.push(req.body)
-    res.send(req.body)
+app.get('/users/new', (req,res)=>{
+    res.render('pages/newUser',{
+        documentTitle: 'New User'
+    })
 })
 
 
-// curl -d "firstname=Donald&lastname=Duck&email=coincoin@gmail.com&password=daisy" -X POST localhost:3000/users
-
-app.post('/users', (req, res) => {
-    const plainTextPassword = req.body.password
-    console.log(`The user password: ${plainTextPassword}`)
-    console.log('before')
-    bcrypt.genSalt(saltRounds, (err, salt) => {
-        const hash = bcrypt.hash(plainTextPassword, salt, (err, hash) => {
-            console.log(`The hash: ${hash}`)
-            res.send(hash)
-        });
-    });
-    console.log('after')
+app.get('/schedules/new', (req,res)=>{
+    res.render('pages/newSchedule',{
+        documentTitle: 'New Schedule'
+    })
 })
+
+app.post('/schedules/new', (req, res) => {
+    console.log(req.body)
+    data.schedules.push(req.body)
+    res.redirect('/')
+})
+
+
+// app.post('/schedules', (req, res) => {
+//     data.users.push(req.body)
+//     res.send(req.body)
+// })
+
+
+// // curl -d "firstname=Donald&lastname=Duck&email=coincoin@gmail.com&password=daisy" -X POST localhost:3000/users
+
+// app.post('/users', (req, res) => {
+//     const plainTextPassword = req.body.password
+//     console.log(`The user password: ${plainTextPassword}`)
+//     console.log('before')
+//     bcrypt.genSalt(saltRounds, (err, salt) => {
+//         const hash = bcrypt.hash(plainTextPassword, salt, (err, hash) => {
+//             console.log(`The hash: ${hash}`)
+//             res.send(hash)
+//         });
+//     });
+//     console.log('after')
+// })
 
 
 
