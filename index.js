@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }))
 //set view engine
 app.set('view engine', 'ejs')
 
-
+//show schedules
 app.get('/', (req, res) => {
     db.any('SELECT * FROM schedules;')
     .then((schedules) => {
@@ -53,25 +53,21 @@ app.get('/', (req, res) => {
 
 //   })
 
-  app.get('/new',(req, res) => {
+//show schedules form
+app.get('/new',(req, res) => {
     res.render('pages/schedules')
 })
-app.post('/new' ,(req, res) => {
-    console.log(req.body)
-    new_Schedule = {
-        username: req.body.username,
-        day: +req.body.day,
-        start_time: req.body.start_time,
-        end_time: req.body.end_time
-      };
-      console.log(new_Schedule)
 
-    db.none('INSERT INTO schedules(username, day, start_time, end_time)' +
-    'values(${new_Schedule.username}, ${new_Schedule.day}, ${new_Schedule.start_time}, ${new_Schedule.end_time})',{new_Schedule} )
+//submit schedules form
+app.post('/new' ,(req, res) => {
+req.body.user_id = Number(req.body.user_id)
+req.body.day = Number(req.body.day)
+db.any('INSERT INTO schedules (user_id, day, start_at, end_at) VALUES ($1, $2, $3, $4);', 
+    [req.body.user_id, req.body.day, req.body.start_at, req.body.end_at])
 .catch((err) => {
   res.send(err)
 })
-res.redirect('/new')
+res.redirect('/')
 })
 
 
