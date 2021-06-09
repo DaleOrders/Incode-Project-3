@@ -1,12 +1,13 @@
-//const express = require('express')
-//const data=require('./data.js')
-import express from 'express'
+const express = require('express')
 const app = express()
-import { users, schedules } from './data.js'
-const port = 3000
+
+
+//postgres setup
+const db=require('./database.js')
+const port = process.env.PORT||3000
 
 //bcrypt
-import bcrypt from 'bcrypt'
+const bcrypt=require('bcrypt')
 const saltRounds = 10;
 
 //body passer
@@ -16,93 +17,70 @@ app.use(express.urlencoded({ extended: true }))
 //set view engine
 app.set('view engine', 'ejs')
 
+
 app.get('/', (req, res) => {
-    res.send("Welcome to our schedule website")
+    db.any('SELECT * FROM schedules;')
+    .then((schedules) => {
+    console.log(schedules)
+    res.render('pages/index', {
+        documentTitle: 'Schedules',
+        schedules: schedules
+    })
+ })
+ .catch((err) => {
+     res.send(err)
+ })
 })
 
-//Step 2
-app.get('/schedules', (req, res) => {
-    res.send(schedules)
-})
 
-app.get('/users', (req, res) => {
-    res.send(users)
-})
 
-// app.get('/schedules/:id', (req, res) => {
-//     const arr = []
-//     for (let i = 0; i < schedules.length; i++) {
-//         if(schedules[i].user_id === Number(req.params.id)){
-//         arr.push(schedules[i])
+
+//   app.get('/new', (req,res)=>{
+//       res.render('pages/new', {
+//           documentTitle: 'New Schedule'
+//       })
+//   })
+
+//   app.post('/new', (req, res)=>{
+//     const { user_id, day, start_at, end_at } = req.body
+//     schedules.query('INSERT INTO schedules (user_id, day, start_at, end_at) VALUES ($1, $2, $3, $4)', [user_id, day, start_at, end_at], (error, results) => {
+//         if (error) {
+//           throw error
 //         }
-//     }
-//     res.send(arr)
-// })
+//         //res.status(201).send(`Schedule added with ID: ${result.user_id}`)
+//         res.redirect('/new')
+//       })
 
+//   })
 
-
-//Step 3
-
-// '/users/2' will return the information of user n°2
-
-app.get('/users/:id', (req, res) => {
-    const id = parseInt(req.params.id)
-    if (id >= users.length) {
-        res.send('invalid number')
-    } else {
-        res.send(users[id])
-    }
-}
-)
-
-
-// '/users/2/schedules' will return a list of all schedules for user n°2
-
-app.get('/users/:id/schedules', (req, res) => {
-    const arr = []
-    if (Number(req.params.id) >= users.length) {
-        res.send('invalid user id')
-    }
-    for (let i = 0; i < schedules.length; i++) {
-        if (schedules[i].user_id === Number(req.params.id)) {
-            arr.push(schedules[i])
-        }
-    }
-    res.send(arr)
+  app.get('/new',(req, res) => {
+    res.render('pages/schedules')
 })
+app.post('/new' ,(req, res) => {
+    console.log(req.body)
+    new_Schedule = {
+        username: req.body.username,
+        day: +req.body.day,
+        start_time: req.body.start_time,
+        end_time: req.body.end_time
+      };
+      console.log(new_Schedule)
 
-//Step 4
-
-// app.post('/users', (req, res) => {
-//     users.push(req.body)
-//     res.send(req.body)
-// })
-
-// app.post('/users', (req, res) => {
-//     users.push(req.body.password)
-//     res.send(req.body)
-// })
-
-app.post('/schedules', (req, res) => {
-    users.push(req.body)
-    res.send(req.body)
+    db.none('INSERT INTO schedules(username, day, start_time, end_time)' +
+    'values(${new_Schedule.username}, ${new_Schedule.day}, ${new_Schedule.start_time}, ${new_Schedule.end_time})',{new_Schedule} )
+.catch((err) => {
+  res.send(err)
+})
+res.redirect('/new')
 })
 
 
-app.post('/users', (req, res) => {
-    const plainTextPassword = req.body.password
-    console.log(`The user password: ${plainTextPassword}`)
-    console.log('before')
-    bcrypt.genSalt(saltRounds, (err, salt) => {
-        const hash = bcrypt.hash(plainTextPassword, salt, (err, hash) => {
-            console.log(`The hash: ${hash}`)
-            res.send(hash)
-        });
-    });
-    console.log('after')
-})
+
+
+
 
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })
+
