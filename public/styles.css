@@ -5,6 +5,11 @@
     box-sizing: border-box;
   }
 
+  body{
+    font-family: 'Lato', sans-serif;
+    font-size: 20px;
+  }
+
 /* NAV LAYOUT */
 nav{
     background-color:#6a7b8b;
@@ -27,8 +32,11 @@ nav> img{
   }
 
   .title{
-      margin:10px 42%;
+      margin:20px 42% 10px; 
       text-align: center;
+      font-size: 50px;
+      font-weight: bold;
+      text-transform: uppercase;
   }
 
   .btn.btn-primary{
@@ -56,6 +64,30 @@ nav> img{
   .col4{
     max-width: 450px;
   }
+
+  .table{
+    margin:30px 25%;
+    width: 50%;
+  }
+
+  th, td{
+    height:60px;
+  }
+
+  th{
+    font-size: 20px;
+    font-weight: 150;
+    text-transform: uppercase;
+  }
+
+  .title.schedules{
+    font-size: 35px;
+    margin:10px 15%;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+ 
 
 
   
